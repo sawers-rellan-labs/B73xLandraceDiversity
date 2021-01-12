@@ -15,7 +15,7 @@ library(maps)
 library(MaizePal)
 #load in data
 
-landrace <- read.csv("data/LANGEBIO_B73_POPS.csv")
+landrace <- read.csv("Data/LANGEBIO_B73_POPS.csv")
 
 #create variables from data
 landrace$Donor_Lon <- as.numeric(landrace$Donor_Lon)

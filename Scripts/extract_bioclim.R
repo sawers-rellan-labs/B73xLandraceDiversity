@@ -27,7 +27,7 @@ library(cowplot) # just for plotting aesthetics
 # Load in the file containing the list of accessions with their corresponding coordinates
 # We only need 4 columns: accession, latitude, longitude, and elevation
 
-landrace <- read.csv("data/popbasics.csv")
+landrace <- read.csv("Data/popbasics.csv")
 head(landrace)
 
 #load location coordinates as SpatialPoints
