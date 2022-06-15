@@ -13,6 +13,7 @@ library(cowplot)
 library(ggmap)
 library(maps)
 library(MaizePal)
+library(viridis)
 #load in data
 
 landrace <- read.csv("Data/LANGEBIO_B73_POPS.csv")
@@ -23,28 +24,46 @@ landrace$Donor_Lat <- as.numeric(landrace$Donor_Lat)
 landrace$Donor_Ele <- as.numeric(landrace$Donor_Ele)
 #id <- landrace$Line
 
+landrace_hilo <- landrace_advanced %>%
+  filter(Pop == "HiLo")
+
+landrace_advanced <- landrace %>%
+  filter(State != "Lost")
+
 
 #create a basemap using get_map function
-mylocation <- geocode("Latin America")
+register_google("AIzaSyC7ysJP7aVkxc-r1fIPskFkUtRiKGkzxCk")
+mylocation <- geocode("Ecuador")
 
-basemap <- get_map( location =mylocation, color='bw', zoom=3, 
+basemap <- get_map( location =mylocation, maptype="satellite", color = "bw", zoom=3, 
                     source='google')
-ggmap(basemap)
+map <-ggmap(basemap,extent='panel', 
+               base_layer=ggplot(landrace, 
+                                 aes(x=Donor_Lon, y=Donor_Lat)))
 
 
 #make a pallet 
-pal <- maize_pal("MaizMorado")
+#pal <- maize_pal("HighlandMAGIC")
 
 #Time to map!
-map <-ggmap(basemap) +  #save the base layer map 
-  geom_point(data = landrace,  #add the data points
-             aes(x = Donor_Lon, 
-                 y = Donor_Lat, 
-                 colour = Donor_Ele), #color by elevation
-             size=3) +
-  xlim(-110,-30) + ylim(-35,32) + #set the bounding box to contain the data
-  scale_color_gradientn(colours=pal) # add own color
+map + geom_point(aes(colour = Donor_Ele)) + scale_color_viridis(option="rocket") +
+  xlim(-115,-35) + ylim(-35,35)
 
-map
+#some statistics
 
+landrace %>%
+  ggplot(aes( x = Donor_Ele, fill = Donor_Ele)) +
+  geom_density() +
+  theme_cowplot()
+
+#field data from CLY21
+
+CLY21 <- read.csv("Data/CLY21_LANDB_Data.csv")
+
+CLY21 %>%
+  filter(Who.What=="LANTEO") %>%
+  ggplot(aes( x = GDUs, fill = Who.What)) +
+  geom_histogram(alpha = 0.8, binwidth = 10) +
+  theme_cowplot() +
+  geom_vline(xintercept = 1630) 
 
